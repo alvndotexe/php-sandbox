@@ -1,0 +1,5 @@
+*vendor
+*.tex
+*.idea
+*.vscode
+docker-compose.yaml

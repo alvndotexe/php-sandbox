@@ -1,0 +1,42 @@
+version: '3'
+services:
+  app:
+    build:
+      args:
+        user: user
+        uid: 1000
+      context: .\
+      dockerfile: php.dockerfile
+    container_name: php
+    image: php:latest
+    restart: unless-stopped
+    env_file:
+      - .env
+    working_dir: /var/www
+    volumes:
+      - .\:/var/www
+  web:
+    build:
+      context: .\
+      dockerfile: nginx.dockerfile
+    container_name: nginx 
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - .\nginx.conf:/etc/nginx/conf.d/nginx.conf
+      - .\:/var/www
+
+  mysql:
+    image: mariadb:latest
+    container_name: mariadb
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+    volumes:
+      - .\database:/docker-entrypoint-initdb.d/
+    ports:
+      - "3306:3306"
